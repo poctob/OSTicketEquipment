@@ -143,11 +143,11 @@ class StaffNav {
                     }
                    break;
                  case 'equipment':
-                    $subnav[]=array('desc'=>'Equipment','href'=>'equipment.php', 'urls'=>array('equipment.php'), 'iconclass'=>'kb');
+                    $subnav[]=array('desc'=>'Equipment','href'=>'equipment.php', 'urls'=>array('equipment.php'), 'iconclass'=>'equipment');
                     if($staff) {
                         if($staff->canManageEquipment())
                             $subnav[]=array('desc'=>'Categories','href'=>'equipment_categories.php','iconclass'=>'faq-categories');
-                            $subnav[]=array('desc'=>'Status','href'=>'equipment_status.php','iconclass'=>'canned');
+                            $subnav[]=array('desc'=>'Status','href'=>'equipment_status.php','iconclass'=>'equipment_status');
                       
                     }
                    break;
@@ -209,7 +209,7 @@ class AdminNav extends StaffNav{
                     $subnav[]=array('desc'=>'Knowledgebase','href'=>'settings.php?t=kb','iconclass'=>'kb-settings');
                     $subnav[]=array('desc'=>'Autoresponder','href'=>'settings.php?t=autoresp','iconclass'=>'email-autoresponders');
                     $subnav[]=array('desc'=>'Alerts&nbsp;&amp;&nbsp;Notices','href'=>'settings.php?t=alerts','iconclass'=>'alert-settings');
-                    $subnav[]=array('desc'=>'Equipment','href'=>'settings.php?t=equipment','iconclass'=>'kb-settings');
+                    $subnav[]=array('desc'=>'Equipment','href'=>'settings.php?t=equipment','iconclass'=>'equipment');
                     break;
                 case 'manage':
                     $subnav[]=array('desc'=>'Help&nbsp;Topics','href'=>'helptopics.php','iconclass'=>'helpTopics');

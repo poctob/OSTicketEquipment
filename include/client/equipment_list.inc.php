@@ -44,7 +44,7 @@ if(!defined('OSTCLIENTINC')) die('Access Denied');
         <input id="searchSubmit" type="submit" value="Search">
     </div>
     <div>
-        <select name="statusID" id="topic-id">
+        <select name="status_id" id="status_id">
             <option value="">&mdash; Any Status &mdash;</option>
             <?php
             $sql='SELECT ht.status_id as statusID, ht.name as statusName, count(equipment.status_id) as equipments '
@@ -68,10 +68,10 @@ if(!defined('OSTCLIENTINC')) die('Access Denied');
 <div>
 <?php
 if($_REQUEST['q'] || $_REQUEST['cid'] || $_REQUEST['status_id']) { //Search.
-    $sql='SELECT equipment.equipment_id, name '
-        .' FROM '.EQUIPMENT_TABLE.' equpment '
-        .' LEFT JOIN '.EQUIPMENT_CATEGORY_TABLE.' cat ON(cat.category_id=equpment.category_id) '
-        .' LEFT JOIN '.EQUIPMENT_STATUS_TABLE.' ft ON(ft.status_id=equpment.status_id) '
+    $sql='SELECT equipment.equipment_id, equipment.name '
+        .' FROM '.EQUIPMENT_TABLE.' equipment '
+        .' LEFT JOIN '.EQUIPMENT_CATEGORY_TABLE.' cat ON(cat.category_id=equipment.category_id) '
+        .' LEFT JOIN '.EQUIPMENT_STATUS_TABLE.' ft ON(ft.status_id=equipment.status_id) '
         .' WHERE equipment.ispublished=1 AND cat.ispublic=1';
     
     if($_REQUEST['cid'])
@@ -82,12 +82,13 @@ if($_REQUEST['q'] || $_REQUEST['cid'] || $_REQUEST['status_id']) { //Search.
 
 
     if($_REQUEST['q']) {
-        $sql.=" AND name LIKE ('%".db_input($_REQUEST['q'],false)."%') 
-                 OR serialnumber LIKE ('%".db_input($_REQUEST['q'],false)."%') 
-                 OR description LIKE ('%".db_input($_REQUEST['q'],false)."%')";
+        $sql.=" AND equipment.name LIKE ('%".db_input($_REQUEST['q'],false)."%') 
+                 OR equipment.serialnumber LIKE ('%".db_input($_REQUEST['q'],false)."%') 
+                 OR equipment.description LIKE ('%".db_input($_REQUEST['q'],false)."%')";
     }
 
     $sql.=' GROUP BY equipment.equipment_id';
+
     echo "<div><strong>Search Results</strong></div><div class='clear'></div>";
     if(($res=db_query($sql)) && ($num=db_num_rows($res))) {
         echo '<div id="equipment">'.$num.' Equipment matched your search criteria.

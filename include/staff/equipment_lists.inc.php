@@ -41,7 +41,7 @@ if(!defined('OSTSTAFFINC') || !$thisstaff) die('Access Denied');
         <input id="searchSubmit" type="submit" value="Search">
     </div>
     <div>
-        <select name="statusId" style="width:350px;" id="topic-id">
+        <select name="status_id" style="width:350px;" id="status_id">
             <option value="">&mdash; All Equipment Status &mdash;</option>
             <?php
             $sql='SELECT status.status_id as StatusID, status.name as Status, count(equipment.status_id) as equipments '
@@ -63,15 +63,25 @@ if(!defined('OSTSTAFFINC') || !$thisstaff) die('Access Denied');
 <hr>
 <div>
 <?php
-if($_REQUEST['q'] || $_REQUEST['cid'] || $_REQUEST['statusId']) { //Search.
-    $sql='SELECT equipment.equipment_id, equipment.name as name, ispublished, status.name as status'
+if($_REQUEST['q'] || $_REQUEST['cid'] || $_REQUEST['status_id']) { //Search.
+    $sql='SELECT equipment.equipment_id, equipment.name, equipment.ispublished '
         .' FROM '.EQUIPMENT_TABLE.' equipment '
-        .' LEFT JOIN '.EQUIPMENT_STATUS_TABLE.' status ON(status.status_id=equipment.status_id) '     
-        .' WHERE 1 ';
-
+        .' LEFT JOIN '.EQUIPMENT_CATEGORY_TABLE.' cat ON(cat.category_id=equipment.category_id) '
+        .' LEFT JOIN '.EQUIPMENT_STATUS_TABLE.' ft ON(ft.status_id=equipment.status_id) '
+        .' WHERE equipment.ispublished=1 AND cat.ispublic=1';
+    
     if($_REQUEST['cid'])
         $sql.=' AND equipment.category_id='.db_input($_REQUEST['cid']);
     
+    if($_REQUEST['status_id'])
+        $sql.=' AND ft.status_id='.db_input($_REQUEST['status_id']);
+
+
+    if($_REQUEST['q']) {
+        $sql.=" AND equipment.name LIKE ('%".db_input($_REQUEST['q'],false)."%') 
+                 OR equipment.serialnumber LIKE ('%".db_input($_REQUEST['q'],false)."%') 
+                 OR equipment.description LIKE ('%".db_input($_REQUEST['q'],false)."%')";
+    }
 
     $sql.=' GROUP BY equipment.equipment_id';
 
