@@ -167,6 +167,8 @@
     define('EQUIPMENT_CATEGORY_TABLE',TABLE_PREFIX.'equipment_category');
     define('EQUIPMENT_STATUS_TABLE',TABLE_PREFIX.'equipment_status');
     define('EQUIPMENT_TICKET_TABLE',TABLE_PREFIX.'equipment_ticket');
+    
+    define('PLUGIN_TABLE',TABLE_PREFIX.'plugin');
 
     define('TICKET_TABLE',TABLE_PREFIX.'ticket');
     define('TICKET_THREAD_TABLE',TABLE_PREFIX.'ticket_thread');

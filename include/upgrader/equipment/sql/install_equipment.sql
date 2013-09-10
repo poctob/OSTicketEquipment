@@ -46,3 +46,11 @@ CREATE TABLE `%TABLE_PREFIX%equipment_ticket` (
   `created` date NOT NULL,
   PRIMARY KEY (`equipment_id`,`ticket_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf
+
+CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%plugin` (
+  `plugin_id` INT NOT NULL AUTO_INCREMENT ,
+  `name` VARCHAR(256) NOT NULL ,
+  `is_installed` TINYINT(1) NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (`plugin_id`) );
+
+INSERT INTO `%TABLE_PREFIX%plugin` (`name`, `is_installed`) VALUES ('equipment, 1');

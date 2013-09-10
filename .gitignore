@@ -126,9 +126,7 @@
 /assets/
 /kb/
 /js/
-/scp/css/
 /scp/js/
-/scp/images/
 /scp/admin.php
 /scp/departments.php
 /scp/dashboard.php
@@ -172,3 +170,8 @@
 /view.php
 /tickets.php
 /open.php
+!/install_equipment.sql
+!/assets/default/css/theme.css
+!/scp/images/icons/equipment.gif
+!/assets/default/images/icons/
+!/assets/default/images/
