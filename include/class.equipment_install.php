@@ -24,10 +24,9 @@ class EquipmentInstaller extends SetupWizard {
     function install($vars) {
 
         $this->errors=$f=array();
-        
-        $f['prefix'] = array('type'=>'string',   'required'=>1, 'error'=>'Table prefix required');
   
-         $sql='SELECT equipment.* FROM EQUIPMENT_TABLE';
+         $sql='SELECT equipment.* FROM '.EQUIPMENT_TABLE;
+         
 
         if (($res=db_query($sql)) && (db_num_rows($res))) 
         {
@@ -36,19 +35,19 @@ class EquipmentInstaller extends SetupWizard {
 
         //bailout on errors.
         if($this->errors) return false;
-
-        $schemaFile =INC_DIR.'upgrader/equipment/sql/install_equipment.sql'; //DB dump.
-
+        
+        $schemaFile =INCLUDE_DIR.'upgrader/equipment/sql/install_equipment.sql'; //DB dump.
+        
         //Last minute checks.
-        if(!file_exists($schemaFile))
-            $this->errors['err']='Internal Error - please make sure your download is the latest (#1)';        
+        if(!file_exists($schemaFile))   
+            echo 'Internal Error - please make sure your download is the latest (#1)';        
         elseif(!$this->load_sql_file($schemaFile,$vars['prefix'], true, true))
-            $this->errors['err']='Error parsing SQL schema! Get help from developers (#4)';                      
+            echo 'Error parsing SQL schema! Get help from developers (#4)';                      
 
         if($this->errors) return false; //Abort on internal errors.
                     
         //Log a message.
-        $msg="Congratulations pluginc installation completed!";
+        echo 'Congratulations plugin installation completed!';
         return true;
     }
 }

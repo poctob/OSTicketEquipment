@@ -16,7 +16,7 @@ CREATE TABLE `%TABLE_PREFIX%equipment` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`equipment_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `%TABLE_PREFIX%equipment_category` (
   `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -28,7 +28,7 @@ CREATE TABLE `%TABLE_PREFIX%equipment_category` (
   `updated` date NOT NULL,
   PRIMARY KEY (`category_id`),
   KEY `ispublic` (`ispublic`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `%TABLE_PREFIX%equipment_status` (
   `status_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -38,14 +38,14 @@ CREATE TABLE `%TABLE_PREFIX%equipment_status` (
   `color` varchar(45) DEFAULT NULL,
   `baseline` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`status_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `%TABLE_PREFIX%equipment_ticket` (
   `equipment_id` int(11) NOT NULL,
   `ticket_id` int(11) NOT NULL,
   `created` date NOT NULL,
   PRIMARY KEY (`equipment_id`,`ticket_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%plugin` (
   `plugin_id` INT NOT NULL AUTO_INCREMENT ,
@@ -53,4 +53,4 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%plugin` (
   `is_installed` TINYINT(1) NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`plugin_id`) );
 
-INSERT INTO `%TABLE_PREFIX%plugin` (`name`, `is_installed`) VALUES ('equipment, 1');
+INSERT INTO `%TABLE_PREFIX%plugin` (`name`, `is_installed`) VALUES ('equipment', '1');

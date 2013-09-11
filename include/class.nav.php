@@ -146,8 +146,10 @@ class StaffNav {
                     $subnav[]=array('desc'=>'Equipment','href'=>'equipment.php', 'urls'=>array('equipment.php'), 'iconclass'=>'equipment');
                     if($staff) {
                         if($staff->canManageEquipment())
+                        {
                             $subnav[]=array('desc'=>'Categories','href'=>'equipment_categories.php','iconclass'=>'faq-categories');
                             $subnav[]=array('desc'=>'Status','href'=>'equipment_status.php','iconclass'=>'equipment_status');
+                        }
                       
                     }
                    break;
