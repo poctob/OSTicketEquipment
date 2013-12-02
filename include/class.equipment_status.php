@@ -127,6 +127,7 @@ class Equipment_Status {
             $sql.=' WHERE baseline=0';
 
         $sql.=' ORDER BY name';
+
         if(($res=db_query($sql)) && db_num_rows($res))
             while(list($id, $name)=db_fetch_row($res))
                 $status_list[$id]=$name;

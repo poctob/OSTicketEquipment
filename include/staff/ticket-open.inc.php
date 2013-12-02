@@ -13,48 +13,21 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
         <tr>
             <th colspan="2">
                 <h4>New Ticket</h4>
-                <em><strong>User Information</strong></em>
             </th>
         </tr>
     </thead>
     <tbody>
+        <?php
+        $uf = UserForm::getUserForm();
+        $uf->render();
+        if($cfg->notifyONNewStaffTicket()) {  ?>
         <tr>
-            <td width="160" class="required">
-                Email Address:
-            </td>
+            <td width="160">Alert:</td>
             <td>
-
-                <input type="text" size="50" name="email" id="email" class="typeahead" value="<?php echo $info['email']; ?>"
-                    autocomplete="off" autocorrect="off" autocapitalize="off">
-                &nbsp;<span class="error">*&nbsp;<?php echo $errors['email']; ?></span>
-            <?php 
-            if($cfg->notifyONNewStaffTicket()) { ?>
-               &nbsp;&nbsp;&nbsp;
-               <input type="checkbox" name="alertuser" <?php echo (!$errors || $info['alertuser'])? 'checked="checked"': ''; ?>>Send alert to user.
-            <?php 
-             } ?>
+            <input type="checkbox" name="alertuser" <?php echo (!$errors || $info['alertuser'])? 'checked="checked"': ''; ?>>Send alert to user.
             </td>
         </tr>
-        <tr>
-            <td width="160" class="required">
-                Full Name:
-            </td>
-            <td>
-                <input type="text" size="50" name="name" id="name" value="<?php echo $info['name']; ?>">
-                &nbsp;<span class="error">*&nbsp;<?php echo $errors['name']; ?></span>
-            </td>
-        </tr>
-        <tr>
-            <td width="160">
-                Phone Number:
-            </td>
-            <td>
-                <input type="text" size="20" name="phone" id="phone" value="<?php echo $info['phone']; ?>">
-                &nbsp;<span class="error">&nbsp;<?php echo $errors['phone']; ?></span>
-                Ext <input type="text" size="6" name="phone_ext" id="phone_ext" value="<?php echo $info['phone_ext']; ?>">
-                &nbsp;<span class="error">&nbsp;<?php echo $errors['phone_ext']; ?></span>
-            </td>
-        </tr>
+        <?php } ?>
         <tr>
             <th colspan="2">
                 <em><strong>Ticket Information &amp; Options</strong>:</em>
@@ -99,7 +72,10 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
                 Help Topic:
             </td>
             <td>
-                <select name="topicId">
+                <select name="topicId" onchange="javascript:
+                        $('#dynamic-form').load(
+                            'ajax.php/form/help-topic/' + this.value);
+                        ">
                     <option value="" selected >&mdash; Select Help Topic &mdash;</option>
                     <?php
                     if($topics=Topic::getHelpTopics()) {
@@ -113,25 +89,6 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
                 &nbsp;<font class="error"><b>*</b>&nbsp;<?php echo $errors['topicId']; ?></font>
             </td>
         </tr>
-        <tr>
-            <td width="160">
-                Priority:
-            </td>
-            <td>
-                <select name="priorityId">
-                    <option value="0" selected >&mdash; System Default &mdash;</option>
-                    <?php
-                    if($priorities=Priority::getPriorities()) {
-                        foreach($priorities as $id =>$name) {
-                            echo sprintf('<option value="%d" %s>%s</option>',
-                                    $id, ($info['priorityId']==$id)?'selected="selected"':'',$name);
-                        }
-                    }
-                    ?>
-                </select>
-                &nbsp;<font class="error">&nbsp;<?php echo $errors['priorityId']; ?></font>
-            </td>
-         </tr>
          <tr>
             <td width="160">
                 SLA Plan:
@@ -151,7 +108,8 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
                 &nbsp;<font class="error">&nbsp;<?php echo $errors['slaId']; ?></font>
             </td>
          </tr>
-         
+
+
            <?php if($cfg->isEquipmentEnabled()) { ?>
             <tr>
            <td>Equipment Affected:</td>
@@ -205,8 +163,7 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
                 <em>Time is based on your time zone (GMT <?php echo $thisstaff->getTZoffset(); ?>)</em>
             </td>
         </tr>
-      
-        
+
         <?php
         if($thisstaff->canAssignTickets()) { ?>
         <tr>
@@ -239,22 +196,16 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
             </td>
         </tr>
         <?php
-        } ?>
-        <tr>
-            <th colspan="2">
-                <em><strong>Issue</strong>: The user will be able to see the issue summary below and any associated responses.</em>
-            </th>
-        </tr>
-        <tr>
-            <td colspan=2>
-                <div>
-                    <em><strong>Subject</strong>: Issue summary </em> &nbsp;<font class="error">*&nbsp;<?php echo $errors['subject']; ?></font><br>
-                    <input type="text" name="subject" size="60" value="<?php echo $info['subject']; ?>">
-                </div>
-                <div><em><strong>Issue</strong>: Details on the reason(s) for opening the ticket.</em> <font class="error">*&nbsp;<?php echo $errors['issue']; ?></font></div>
-                <textarea name="issue" cols="21" rows="8" style="width:80%;"><?php echo $info['issue']; ?></textarea>
-            </td>
-        </tr>
+        }
+        TicketForm::getInstance()->render(true);
+        ?>
+        </tbody>
+        <tbody id="dynamic-form">
+        <?php
+            if ($form) $form->render(true);
+        ?>
+        </tbody>
+        <tbody>
         <?php
         //is the user allowed to post replies??
         if($thisstaff->canPostReply()) {
@@ -269,7 +220,7 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
             <?php
             if(($cannedResponses=Canned::getCannedResponses())) {
                 ?>
-                <div>
+                <div style="margin-top:0.3em;margin-bottom:0.5em">
                     Canned Response:&nbsp;
                     <select id="cannedResp" name="cannedResp">
                         <option value="0" selected="selected">&mdash; Select a canned response &mdash;</option>
@@ -284,7 +235,11 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
                 </div>
             <?php
             } ?>
-                <textarea name="response" id="response" cols="21" rows="8" style="width:80%;"><?php echo $info['response']; ?></textarea>
+                <textarea class="richtext ifhtml draft draft-delete"
+                    data-draft-namespace="ticket.staff.response"
+                    placeholder="Intial response for the ticket"
+                    name="response" id="response" cols="21" rows="8"
+                    style="width:80%;"><?php echo $info['response']; ?></textarea>
                 <table border="0" cellspacing="0" cellpadding="2" width="100%">
                 <?php
                 if($cfg->allowAttachments()) { ?>
@@ -296,8 +251,8 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
                                 foreach($info['cannedattachments'] as $k=>$id) {
                                     if(!($file=AttachmentFile::lookup($id))) continue;
                                     $hash=$file->getHash().md5($file->getId().session_id().$file->getHash());
-                                    echo sprintf('<label><input type="checkbox" name="cannedattachments[]" 
-                                            id="f%d" value="%d" checked="checked" 
+                                    echo sprintf('<label><input type="checkbox" name="cannedattachments[]"
+                                            id="f%d" value="%d" checked="checked"
                                             <a href="file.php?h=%s">%s</a>&nbsp;&nbsp;</label>&nbsp;',
                                             $file->getId(), $file->getId() , $hash, $file->getName());
                                 }
@@ -349,12 +304,17 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
         ?>
         <tr>
             <th colspan="2">
-                <em><strong>Internal Note</strong>: Optional internal note (recommended on assignment) <font class="error">&nbsp;<?php echo $errors['note']; ?></font></em>
+                <em><strong>Internal Note</strong>
+                <font class="error">&nbsp;<?php echo $errors['note']; ?></font></em>
             </th>
         </tr>
         <tr>
             <td colspan=2>
-                <textarea name="note" cols="21" rows="6" style="width:80%;"><?php echo $info['note']; ?></textarea>
+                <textarea class="richtext ifhtml draft draft-delete"
+                    placeholder="Optional internal note (recommended on assignment)"
+                    data-draft-namespace="ticket.staff.note" name="note"
+                    cols="21" rows="6" style="width:80%;"
+                    ><?php echo $info['note']; ?></textarea>
             </td>
         </tr>
     </tbody>

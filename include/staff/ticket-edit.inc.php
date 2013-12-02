@@ -2,55 +2,44 @@
 if(!defined('OSTSCPINC') || !$thisstaff || !$thisstaff->canEditTickets() || !$ticket) die('Access Denied');
 
 $info=Format::htmlchars(($errors && $_POST)?$_POST:$ticket->getUpdateInfo());
+if ($_POST)
+    $info['duedate'] = Format::date($cfg->getDateFormat(),
+       strtotime($info['duedate']));
 ?>
 <form action="tickets.php?id=<?php echo $ticket->getId(); ?>&a=edit" method="post" id="save"  enctype="multipart/form-data">
  <?php csrf_token(); ?>
  <input type="hidden" name="do" value="update">
  <input type="hidden" name="a" value="edit">
  <input type="hidden" name="id" value="<?php echo $ticket->getId(); ?>">
- <h2>Update Ticket# <?php echo $ticket->getExtId(); ?></h2>
+ <h2>Update Ticket #<?php echo $ticket->getExtId(); ?></h2>
  <table class="form_table" width="940" border="0" cellspacing="0" cellpadding="2">
-    <thead>
-        <tr>
-            <th colspan="2">
-                <h4>Ticket Update</h4>
-                <em><strong>User Information</strong>: Make sure the email address is valid.</em>
-            </th>
-        </tr>
-    </thead>
     <tbody>
         <tr>
-            <td width="160" class="required">
-                Full Name:
-            </td>
-            <td>
-                <input type="text" size="50" name="name" value="<?php echo $info['name']; ?>">
-                &nbsp;<span class="error">*&nbsp;<?php echo $errors['name']; ?></span>
-            </td>
+            <th colspan="2">
+                <em><strong>Client Information</strong>: Currently selected client</em>
+            </th>
         </tr>
-        <tr>
-            <td width="160" class="required">
-                Email Address:
-            </td>
-            <td>
-                <input type="text" size="50" name="email" value="<?php echo $info['email']; ?>">
-                &nbsp;<span class="error">*&nbsp;<?php echo $errors['email']; ?></span>
-            </td>
-        </tr>
-        <tr>
-            <td width="160">
-                Phone Number:
-            </td>
-            <td>
-                <input type="text" size="20" name="phone" value="<?php echo $info['phone']; ?>">
-                &nbsp;<span class="error">&nbsp;<?php echo $errors['phone']; ?></span>
-                Ext <input type="text" size="6" name="phone_ext" value="<?php echo $info['phone_ext']; ?>">
-                &nbsp;<span class="error">&nbsp;<?php echo $errors['phone_ext']; ?></span>
-            </td>
-        </tr>
+    <?php
+    $client = User::lookup($info['user_id']);
+    ?>
+    <tr><td>Client:</td><td>
+        <span id="client-info"><?php echo $client->getName(); ?>
+        &lt;<?php echo $client->getEmail(); ?>&gt;</span>
+        <a class="action-button" style="float:none;overflow:inherit"
+            href="ajax.php/users/lookup?id=<?php echo $client->getId(); ?>"
+            onclick="javascript:
+                $('#overlay').show();
+                $('#user-lookup .body').load(this.href);
+                $('#user-lookup').show();
+                return false;
+            "><i class="icon-edit"></i> Change</a>
+        <input type="hidden" name="user_id" id="user_id"
+            value="<?php echo $info['user_id']; ?>" />
+        </td></tr>
+    <tbody>
         <tr>
             <th colspan="2">
-                <em><strong>Ticket Information</strong>: Due date overwrites SLA's grace period.</em>
+                <em><strong>Ticket Information</strong>: Due date overrides SLA's grace period.</em>
             </th>
         </tr>
         <tr>
@@ -86,34 +75,6 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$ticket->getUpdateInfo());
                     ?>
                 </select>
                 &nbsp;<font class="error"><b>*</b>&nbsp;<?php echo $errors['topicId']; ?></font>
-            </td>
-        </tr>
-        <tr>
-            <td width="160" class="required">
-                Priority Level:
-            </td>
-            <td>
-                <select name="priorityId">
-                    <option value="" selected >&mdash; Select Priority &mdash;</option>
-                    <?php
-                    if($priorities=Priority::getPriorities()) {
-                        foreach($priorities as $id =>$name) {
-                            echo sprintf('<option value="%d" %s>%s</option>',
-                                    $id, ($info['priorityId']==$id)?'selected="selected"':'',$name);
-                        }
-                    }
-                    ?>
-                </select>
-                &nbsp;<font class="error">*&nbsp;<?php echo $errors['priorityId']; ?></font>
-            </td>
-        </tr>
-        <tr>
-            <td width="160" class="required">
-                Subject:
-            </td>
-            <td>
-                 <input type="text" name="subject" size="60" value="<?php echo $info['subject']; ?>">
-                 &nbsp;<font class="error">*&nbsp;<?php $errors['subject']; ?></font>
             </td>
         </tr>
         <tr>
@@ -176,21 +137,31 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$ticket->getUpdateInfo());
                 $min=$hr=null;
                 if($info['time'])
                     list($hr, $min)=explode(':', $info['time']);
-                    
+
                 echo Misc::timeDropdown($hr, $min, 'time');
                 ?>
                 &nbsp;<font class="error">&nbsp;<?php echo $errors['duedate']; ?>&nbsp;<?php echo $errors['time']; ?></font>
                 <em>Time is based on your time zone (GMT <?php echo $thisstaff->getTZoffset(); ?>)</em>
             </td>
         </tr>
+        </tbody>
+        <tbody id="dynamic-form">
+        <?php if ($forms)
+            foreach ($forms as $form) {
+                $form->render(true);
+        } ?>
+        </tbody>
+        <tbody>
         <tr>
             <th colspan="2">
                 <em><strong>Internal Note</strong>: Reason for editing the ticket (required) <font class="error">&nbsp;<?php echo $errors['note'];?></font></em>
             </th>
         </tr>
         <tr>
-            <td colspan=2>
-                <textarea name="note" cols="21" rows="6" style="width:80%;"><?php echo $info['note']; ?></textarea>
+            <td colspan="2">
+                <textarea class="richtext no-bar" name="note" cols="21"
+                    rows="6" style="width:80%;"><?php echo $info['note'];
+                    ?></textarea>
             </td>
         </tr>
     </tbody>
@@ -201,3 +172,6 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$ticket->getUpdateInfo());
     <input type="button" name="cancel" value="Cancel" onclick='window.location.href="tickets.php?id=<?php echo $ticket->getId(); ?>"'>
 </p>
 </form>
+<div style="display:none;" class="dialog draggable" id="user-lookup">
+    <div class="body"></div>
+</div>

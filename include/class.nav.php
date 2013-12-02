@@ -203,9 +203,11 @@ class AdminNav extends StaffNav{
             switch(strtolower($k)){
                 case 'dashboard':
                     $subnav[]=array('desc'=>'System&nbsp;Logs','href'=>'logs.php','iconclass'=>'logs');
+                    $subnav[]=array('desc'=>'Information','href'=>'system.php','iconclass'=>'preferences');
                     break;
                 case 'settings':
-                    $subnav[]=array('desc'=>'System&nbsp;Preferences','href'=>'settings.php?t=system','iconclass'=>'preferences');
+                    $subnav[]=array('desc'=>'Company','href'=>'settings.php?t=pages','iconclass'=>'pages');
+                    $subnav[]=array('desc'=>'System','href'=>'settings.php?t=system','iconclass'=>'preferences');
                     $subnav[]=array('desc'=>'Tickets','href'=>'settings.php?t=tickets','iconclass'=>'ticket-settings');
                     $subnav[]=array('desc'=>'Emails','href'=>'settings.php?t=emails','iconclass'=>'email-settings');
                     $subnav[]=array('desc'=>'Knowledgebase','href'=>'settings.php?t=kb','iconclass'=>'kb-settings');
@@ -219,6 +221,9 @@ class AdminNav extends StaffNav{
                                         'title'=>'Ticket&nbsp;Filters','iconclass'=>'ticketFilters');
                     $subnav[]=array('desc'=>'SLA&nbsp;Plans','href'=>'slas.php','iconclass'=>'sla');
                     $subnav[]=array('desc'=>'API&nbsp;Keys','href'=>'apikeys.php','iconclass'=>'api');
+                    $subnav[]=array('desc'=>'Pages', 'href'=>'pages.php','title'=>'Pages','iconclass'=>'pages');
+                    $subnav[]=array('desc'=>'Forms','href'=>'forms.php','iconclass'=>'forms');
+                    $subnav[]=array('desc'=>'Lists','href'=>'lists.php','iconclass'=>'lists');
                     break;
                 case 'emails':
                     $subnav[]=array('desc'=>'Emails','href'=>'emails.php', 'title'=>'Email Addresses', 'iconclass'=>'emailSettings');
@@ -283,6 +288,7 @@ class UserNav {
             $navs['home']=array('desc'=>'Support&nbsp;Center&nbsp;Home','href'=>'index.php','title'=>'');
             if($cfg && $cfg->isKnowledgebaseEnabled())
                 $navs['kb']=array('desc'=>'Knowledgebase','href'=>'kb/index.php','title'=>'');
+
             
             if($cfg && $cfg->isEquipmentEnabled())
                 $navs['equipment']=array('desc'=>'Equipment Status','href'=>'equipment/index.php','title'=>'');
