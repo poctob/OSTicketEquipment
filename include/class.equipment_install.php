@@ -16,39 +16,54 @@ require_once 'class.setup.php';
 
 class EquipmentInstaller extends SetupWizard {
 
-
+    private $error;
     function Installer() {
-        $this->errors=array();
+	$this->error='';
     }
     
     function install($vars) {
-
-        $this->errors=$f=array();
   
-         $sql='SELECT equipment.* FROM '.EQUIPMENT_TABLE;
-         
+        $sql='SELECT equipment.* FROM '.EQUIPMENT_TABLE;
+        
 
         if (($res=db_query($sql)) && (db_num_rows($res))) 
         {
-            $this->errors['err']='Looks like this plugin is already installed! Aborting!';
+            $this->error='Looks like this plugin is already installed! Aborting!';
+	    return false;
         }
-
-        //bailout on errors.
-        if($this->errors) return false;
+	
         
         $schemaFile =INCLUDE_DIR.'upgrader/equipment/sql/install_equipment.sql'; //DB dump.
+	
         
         //Last minute checks.
-        if(!file_exists($schemaFile))   
-            echo 'Internal Error - please make sure your download is the latest (#1)';        
+        if(!file_exists($schemaFile))
+	{
+	    echo '<br />';
+	    var_dump($schemaFile);
+	    echo '<br />';    
+            echo 'File Access Error - please make sure your download is the latest (#1)';  
+            echo '<br />'; 
+	    $this->error='File Access Error!';       
+	    
+	}	
         elseif(!$this->load_sql_file($schemaFile,$vars['prefix'], true, true))
-            echo 'Error parsing SQL schema! Get help from developers (#4)';                      
+	{
+            echo '<br />';
+            echo 'Error parsing SQL schema! Get help from developers (#4)';     
+	    $this->error='DB Error!';       
+	    echo '<br />';          
+	}
 
-        if($this->errors) return false; //Abort on internal errors.
-                    
-        //Log a message.
-        echo 'Congratulations plugin installation completed!';
-        return true;
+        if( (strlen($this->error))>0)
+	{
+		return false; //Abort on internal errors.
+	}
+	else
+	{                
+	        echo 'Congratulations plugin installation completed!';
+        	return true;
+	}
     }
 }
 ?>

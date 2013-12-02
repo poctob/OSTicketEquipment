@@ -120,7 +120,6 @@
 /include/class.variable.php
 /include/index.php
 /include/ost-config.php
-/images/
 /css/
 /api/
 /kb/
@@ -225,3 +224,7 @@
 /assets/default/css/theme.min.css
 /assets/default/about-custom-themes.md
 /assets/font/
+!/images/yellow_dot.png
+!/images/green_dot.png
+!/images/red_dot.png
+/images/FhHRx-Spinner.gif
