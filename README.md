@@ -4,6 +4,7 @@ OSTicketEquipment
 from here https://github.com/poctob/OSTicketEquipment/releases
 
 1. Installation
+
  a. Unzip the archive into your OSTicket installation directory.
 
  b. Login into the backend admin panel.  You should have Equipment tab.
