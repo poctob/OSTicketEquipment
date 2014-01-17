@@ -18,5 +18,8 @@ from here https://github.com/poctob/OSTicketEquipment/releases
  e. Go to staff panel and explore equipment tab. You will need to add equipment 
  category and status before you can add equipment item.
 
+For more information visit Wiki page:
+https://github.com/poctob/OSTicketEquipment/wiki
+
 email: alexp@xpresstek.net for problems
 
