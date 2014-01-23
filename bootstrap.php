@@ -2,7 +2,7 @@
 
 class Bootstrap {
 
-    function init() {
+    static function init() {
         #Disable Globals if enabled....before loading config info
         if(ini_get('register_globals')) {
            ini_set('register_globals',0);
@@ -182,16 +182,13 @@ class Bootstrap {
         require(INCLUDE_DIR.'class.log.php');
         require(INCLUDE_DIR.'class.crypto.php');
         require(INCLUDE_DIR.'class.timezone.php');
-        require(INCLUDE_DIR.'class.signal.php');
+        require_once(INCLUDE_DIR.'class.signal.php');
         require(INCLUDE_DIR.'class.nav.php');
         require(INCLUDE_DIR.'class.page.php');
         require_once(INCLUDE_DIR.'class.format.php'); //format helpers
         require_once(INCLUDE_DIR.'class.validator.php'); //Class to help with basic form input validation...please help improve it.
         require(INCLUDE_DIR.'class.mailer.php');
-        if (extension_loaded('mysqli'))
-            require_once INCLUDE_DIR.'mysqli.php';
-        else
-            require(INCLUDE_DIR.'mysql.php');
+        require_once INCLUDE_DIR.'mysqli.php';
     }
 
     function i18n_prep() {
@@ -223,9 +220,11 @@ class Bootstrap {
             define('LATIN1_UC_CHARS', 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝ');
             define('LATIN1_LC_CHARS', 'àáâãäåæçèéêëìíîïðñòóôõöøùúûüý');
             function mb_strtoupper($str) {
+                if (is_array($str)) $str = $str[0];
                 return strtoupper(strtr($str, LATIN1_LC_CHARS, LATIN1_UC_CHARS));
             }
             function mb_strtolower($str) {
+                if (is_array($str)) $str = $str[0];
                 return strtolower(strtr($str, LATIN1_UC_CHARS, LATIN1_LC_CHARS));
             }
             define('MB_CASE_LOWER', 1);
@@ -236,15 +235,19 @@ class Bootstrap {
                 //      char is not a single-byte char
                 switch ($mode) {
                 case MB_CASE_LOWER:
-                    return preg_replace_callback('/\p{Lu}+/u',
-                        function($a) { return mb_strtolower($a); }, $str);
+                    return preg_replace_callback('/\p{Lu}+/u', 'mb_strtolower', $str);
                 case MB_CASE_UPPER:
-                    return preg_replace_callback('/\p{Ll}+/u',
-                        function($a) { return mb_strtoupper($a); }, $str);
+                    return preg_replace_callback('/\p{Ll}+/u', 'mb_strtoupper', $str);
                 case MB_CASE_TITLE:
-                    return preg_replace_callback('/\b\p{Ll}/u',
-                        function($a) { return mb_strtoupper($a); }, $str);
+                    return preg_replace_callback('/\b\p{Ll}/u', 'mb_strtoupper', $str);
                 }
+            }
+            function mb_internal_encoding($encoding) { return 'UTF-8'; }
+            function mb_regex_encoding($encoding) { return 'UTF-8'; }
+            function mb_substr_count($haystack, $needle) {
+                $matches = array();
+                return preg_match_all('`'.preg_quote($needle).'`u', $haystack,
+                    $matches);
             }
         }
         else {
@@ -265,7 +268,11 @@ class Bootstrap {
 }
 
 #Get real path for root dir ---linux and windows
-define('ROOT_DIR',str_replace('\\', '/', realpath(dirname(__FILE__))).'/');
+$here = dirname(__FILE__);
+$here = ($h = realpath($here)) ? $h : $here;
+define('ROOT_DIR',str_replace('\\', '/', $here.'/'));
+unset($here); unset($h);
+
 define('INCLUDE_DIR',ROOT_DIR.'include/'); //Change this if include is moved outside the web path.
 define('PEAR_DIR',INCLUDE_DIR.'pear/');
 define('SETUP_DIR',ROOT_DIR.'setup/');
@@ -276,7 +283,7 @@ define('I18N_DIR', INCLUDE_DIR.'i18n/');
 /*############## Do NOT monkey with anything else beyond this point UNLESS you really know what you are doing ##############*/
 
 #Current version && schema signature (Changes from version to version)
-define('THIS_VERSION', 'v1.8.0-rc2-61-gd0f56b6');
+define('THIS_VERSION', 'v1.8.0.2');
 //Path separator
 if(!defined('PATH_SEPARATOR')){
     if(strpos($_ENV['OS'],'Win')!==false || !strcasecmp(substr(PHP_OS, 0, 3),'WIN'))
@@ -301,7 +308,6 @@ Bootstrap::init();
 
 #CURRENT EXECUTING SCRIPT.
 define('THISPAGE', Misc::currentURL());
-define('THISURI', $_SERVER['REQUEST_URI']);
 
 define('DEFAULT_MAX_FILE_UPLOADS',ini_get('max_file_uploads')?ini_get('max_file_uploads'):5);
 define('DEFAULT_PRIORITY_ID',1);

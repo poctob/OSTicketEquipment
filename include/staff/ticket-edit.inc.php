@@ -20,21 +20,35 @@ if ($_POST)
             </th>
         </tr>
     <?php
-    $client = User::lookup($info['user_id']);
+    if(!$info['user_id'] || !($user = User::lookup($info['user_id'])))
+        $user = $ticket->getUser();
     ?>
     <tr><td>Client:</td><td>
-        <span id="client-info"><?php echo $client->getName(); ?>
-        &lt;<?php echo $client->getEmail(); ?>&gt;</span>
-        <a class="action-button" style="float:none;overflow:inherit"
-            href="ajax.php/users/lookup?id=<?php echo $client->getId(); ?>"
-            onclick="javascript:
-                $('#overlay').show();
-                $('#user-lookup .body').load(this.href);
-                $('#user-lookup').show();
+        <div id="client-info">
+            <a href="#" onclick="javascript:
+                $.userLookup('ajax.php/users/<?php echo $ticket->getOwnerId(); ?>/edit',
+                        function (user) {
+                            $('#client-name').text(user.name);
+                            $('#client-email').text(user.email);
+                        });
                 return false;
-            "><i class="icon-edit"></i> Change</a>
-        <input type="hidden" name="user_id" id="user_id"
-            value="<?php echo $info['user_id']; ?>" />
+                "><i class="icon-user"></i>
+            <span id="client-name"><?php echo Format::htmlchars($user->getName()); ?></span>
+            &lt;<span id="client-email"><?php echo $user->getEmail(); ?></span>&gt;
+            </a>
+            <a class="action-button" style="float:none;overflow:inherit" href="#"
+                onclick="javascript:
+                    $.userLookup('ajax.php/tickets/<?php echo $ticket->getId(); ?>/change-user',
+                            function(user) {
+                                $('input#user_id').val(user.id);
+                                $('#client-name').text(user.name);
+                                $('#client-email').text('<'+user.email+'>');
+                    });
+                    return false;
+                "><i class="icon-edit"></i> Change</a>
+            <input type="hidden" name="user_id" id="user_id"
+                value="<?php echo $info['user_id']; ?>" />
+        </div>
         </td></tr>
     <tbody>
         <tr>

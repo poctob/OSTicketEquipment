@@ -20,6 +20,10 @@ a {
     width: 100%;
 }
 
+.search-input {
+    height: 20px;
+}
+
 .clear {
     clear:both;
 }
@@ -45,11 +49,11 @@ a {
 
 #msg_info { margin: 0; padding: 5px; margin-bottom: 10px; color: #3a87ad; border: 1px solid #bce8f1;  background-color: #d9edf7; }
 
-#msg_notice { margin: 0; padding: 5px 10px 5px 36px; height: 16px; line-height: 16px; margin-bottom: 10px; border: 1px solid #0a0; background: url('../images/icons/ok.png') 10px 50% no-repeat #e0ffe0; }
+#msg_notice { margin: 0; padding: 5px 10px 5px 36px; margin-bottom: 10px; border: 1px solid #0a0; background: url('../images/icons/ok.png') 10px 50% no-repeat #e0ffe0; }
 
-#msg_warning { margin: 0; padding: 5px 10px 5px 36px; height: 16px; line-height: 16px; margin-bottom: 10px; border: 1px solid #f26522; background: url('../images/icons/alert.png') 10px 50% no-repeat #ffffdd; }
+#msg_warning { margin: 0; padding: 5px 10px 5px 36px; margin-bottom: 10px; border: 1px solid #f26522; background: url('../images/icons/alert.png') 10px 50% no-repeat #ffffdd; }
 
-#msg_error { margin: 0; padding: 5px 10px 5px 36px; height: 16px; line-height: 16px; margin-bottom: 10px; border: 1px solid #a00; background: url('../images/icons/error.png') 10px 50% no-repeat #fff0f0; }
+#msg_error { margin: 0; padding: 5px 10px 5px 36px; margin-bottom: 10px; border: 1px solid #a00; background: url('../images/icons/error.png') 10px 50% no-repeat #fff0f0; }
 
 #notice_bar { margin: 0; padding: 5px 10px 5px 36px; height: 16px; line-height: 16px; border: 1px solid #0a0; background: url('../images/icons/ok.png') 10px 50% no-repeat #e0ffe0; }
 
@@ -544,6 +548,17 @@ a.print {
     border-bottom:1px solid #ddd;
 }
 
+.form_table.fixed {
+    table-layout: fixed;
+    border-collapse: collapse;
+    width: 100%;
+}
+.form_table.fixed td {
+    width: 180px;
+}
+.form_table.fixed td + td {
+    width: auto;
+}
 
 td.multi-line {
     vertical-align:top;
@@ -900,8 +915,8 @@ h2 .reload {
     border-top:none;
 }
 
-#response_options > table {
-    width:928px;
+#response_options > form > table {
+    table-layout: fixed;
 }
 
 #response_options > table td {
@@ -960,6 +975,21 @@ h2 .reload {
     z-index:700;
 }
 
+.tip_box.right .tip_arrow {
+    top: 5px;
+    right: -12px;
+    left: auto;
+}
+
+.flip-x {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+
 .tip_content {
     height:auto !important;
     height:20px;
@@ -1006,6 +1036,7 @@ h2 .reload {
     position:absolute;
     top:0.3em;
     right:0.5em;
+    text-decoration:none;
 }
 
 .tip_shadow {
@@ -1040,7 +1071,6 @@ h2 .reload {
 .tip_menu li a {
     display:block;
     width:auto;
-    _width:0;
     float:left;
     padding:0 10px;
     border-right:1px solid #ddd;
@@ -1084,6 +1114,7 @@ h2 .reload {
 }
 
 i.help-tip {
+    vertical-align: inherit;
     color: #aaa;
 }
 i.help-tip:hover {
@@ -1246,7 +1277,7 @@ time {
     box-shadow: 0 5px 60px #001;
     border-radius: 5px;
     max-height: 72%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .redactor_air {
@@ -1278,6 +1309,11 @@ time {
     position: relative;
     padding-right: 3em;
 }
+
+.dialog a {
+        color:#184E81;
+}
+
 
 .dialog a.close {
     position: absolute;
@@ -1379,6 +1415,7 @@ time {
 }
 
 .dialog input[type=submit]:hover, .dialog input[type=submit]:active,
+.dialog input[type=button]:hover, .dialog input[type=button]:active,
 .dialog input[type=reset]:hover, .dialog input[type=reset]:active {
     background-position:bottom left;
 }

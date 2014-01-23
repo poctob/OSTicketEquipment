@@ -123,8 +123,10 @@ class StaffNav {
 
                         if($staff->canCreateTickets())
                             $subnav[]=array('desc'=>'New&nbsp;Ticket',
+                                            'title' => 'Open New Ticket',
                                             'href'=>'tickets.php?a=open',
                                             'iconclass'=>'newTicket',
+                                            'id' => 'new-ticket',
                                             'droponly'=>true);
                     }
                     break;

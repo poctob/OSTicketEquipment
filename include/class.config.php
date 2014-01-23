@@ -17,7 +17,6 @@
 require_once(INCLUDE_DIR.'class.email.php');
 
 class Config {
-
     var $config = array();
 
     var $section = null;                    # Default namespace ('core')
@@ -148,6 +147,7 @@ class OsticketConfig extends Config {
         'allow_online_attachments' => true,
         'allow_online_attachments_onlogin' => false,
         'name_format' =>        'full', # First Last
+        'auto_claim_tickets'=>  true,
     );
 
     function OsticketConfig($section=null) {
@@ -657,8 +657,8 @@ class OsticketConfig extends Config {
         return ($this->get('overdue_alert_dept_members'));
     }
 
-    function autoAssignReopenedTickets() {
-        return ($this->get('auto_assign_reopened_tickets'));
+    function autoClaimTickets() {
+        return $this->get('auto_claim_tickets');
     }
 
     function showAssignedTickets() {
@@ -864,7 +864,7 @@ class OsticketConfig extends Config {
             'autolock_minutes'=>$vars['autolock_minutes'],
             'use_email_priority'=>isset($vars['use_email_priority'])?1:0,
             'enable_captcha'=>isset($vars['enable_captcha'])?1:0,
-            'auto_assign_reopened_tickets'=>isset($vars['auto_assign_reopened_tickets'])?1:0,
+            'auto_claim_tickets'=>isset($vars['auto_claim_tickets'])?1:0,
             'show_assigned_tickets'=>isset($vars['show_assigned_tickets'])?1:0,
             'show_answered_tickets'=>isset($vars['show_answered_tickets'])?1:0,
             'show_related_tickets'=>isset($vars['show_related_tickets'])?1:0,

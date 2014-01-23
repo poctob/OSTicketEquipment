@@ -40,7 +40,9 @@ $info=($_POST && $errors)?Format::htmlchars($_POST):$info;
     </tr>
 <?php
         if (!$thisclient) {
-            UserForm::getUserForm()->render(false, 'Your Information');
+            $uform = UserForm::getUserForm()->getForm($_POST);
+            if ($_POST) $uform->isValid();
+            $uform->render(false, 'Your Information');
         }
         else { ?>
             <tr><td colspan="2"><hr /></td></tr>
@@ -90,6 +92,11 @@ $info=($_POST && $errors)?Format::htmlchars($_POST):$info;
             include(CLIENTINC_DIR . 'templates/dynamic-form.tmpl.php');
         } ?>
     </tbody>
+    <tbody><?php
+        $tform = TicketForm::getInstance()->getForm($_POST);
+        if ($_POST) $tform->isValid();
+        $tform->render(false); ?>
+    </tbody>
     <tbody>
     <?php
     if($cfg && $cfg->isCaptchaEnabled() && (!$thisclient || !$thisclient->isValid())) {
@@ -111,7 +118,8 @@ $info=($_POST && $errors)?Format::htmlchars($_POST):$info;
     <tr><td colspan=2>&nbsp;</td></tr>
     </tbody>
   </table>
-  <p style="padding-left:150px;">
+<hr/>
+  <p style="text-align:center;">
         <input type="submit" value="Create Ticket">
         <input type="reset" value="Reset">
         <input type="button" value="Cancel" onClick='window.location.href="index.php"'>

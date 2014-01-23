@@ -8,8 +8,13 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
  <input type="hidden" name="do" value="create">
  <input type="hidden" name="a" value="open">
  <h2>Open New Ticket</h2>
- <table class="form_table" width="940" border="0" cellspacing="0" cellpadding="2">
+ <table class="form_table fixed" width="940" border="0" cellspacing="0" cellpadding="2">
     <thead>
+    <!-- This looks empty - but beware, with fixed table layout, the user
+         agent will usually only consult the cells in the first row to
+         construct the column widths of the entire toable. Therefore, the
+         first row needs to have two cells -->
+        <tr><td></td><td></td></tr>
         <tr>
             <th colspan="2">
                 <h4>New Ticket</h4>
@@ -17,17 +22,74 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
         </tr>
     </thead>
     <tbody>
+        <tr>
+            <th colspan="2">
+                <em><strong>User Information</strong>: </em>
+            </th>
+        </tr>
         <?php
-        $uf = UserForm::getUserForm();
-        $uf->render();
+        if ($user) { ?>
+        <tr><td>User:</td><td>
+            <div id="user-info">
+                <input type="hidden" name="uid" id="uid" value="<?php echo $user->getId(); ?>" />
+            <a href="#" onclick="javascript:
+                $.userLookup('ajax.php/users/<?php echo $user->getId(); ?>/edit',
+                        function (user) {
+                            $('#user-name').text(user.name);
+                            $('#user-email').text(user.email);
+                        });
+                return false;
+                "><i class="icon-user"></i>
+                <span id="user-name"><?php echo $user->getName(); ?></span>
+                &lt;<span id="user-email"><?php echo $user->getEmail(); ?></span>&gt;
+                </a>
+                <a class="action-button" style="float:none;overflow:inherit" href="#"
+                    onclick="javascript:
+                        $.userLookup('ajax.php/users/select/'+$('input#uid').val(),
+                            function(user) {
+                                $('input#uid').val(user.id);
+                                $('#user-name').text(user.name);
+                                $('#user-email').text('<'+user.email+'>');
+                        });
+                        return false;
+                "><i class="icon-edit"></i> Change</a>
+            </div>
+        </td></tr>
+        <?php
+        } else { //Fallback: Just ask for email and name
+            ?>
+        <tr>
+            <td width="160" class="required"> Email Address: </td>
+            <td>
+                <span style="display:inline-block;">
+                    <input type="text" size=45 name="email" id="user-email"
+                        autocomplete="off" autocorrect="off" value="<?php echo $info['email']; ?>" /> </span>
+                <font class="error">* <?php echo $errors['email']; ?></font>
+            </td>
+        </tr>
+        <tr>
+            <td width="160" class="required"> Full Name: </td>
+            <td>
+                <span style="display:inline-block;">
+                    <input type="text" size=45 name="name" id="user-name" value="<?php echo $info['name']; ?>" /> </span>
+                <font class="error">* <?php echo $errors['name']; ?></font>
+            </td>
+        </tr>
+        <?php
+        } ?>
+
+        <?php
         if($cfg->notifyONNewStaffTicket()) {  ?>
         <tr>
-            <td width="160">Alert:</td>
+            <td width="160">Ticket Notice:</td>
             <td>
             <input type="checkbox" name="alertuser" <?php echo (!$errors || $info['alertuser'])? 'checked="checked"': ''; ?>>Send alert to user.
             </td>
         </tr>
-        <?php } ?>
+        <?php
+        } ?>
+    </tbody>
+    <tbody>
         <tr>
             <th colspan="2">
                 <em><strong>Ticket Information &amp; Options</strong>:</em>
@@ -195,21 +257,23 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
                 </select>&nbsp;<span class='error'>&nbsp;<?php echo $errors['assignId']; ?></span>
             </td>
         </tr>
-        <?php
-        }
-        TicketForm::getInstance()->render(true);
-        ?>
+        <?php } ?>
         </tbody>
         <tbody id="dynamic-form">
         <?php
-            if ($form) $form->render(true);
+            if ($form) $form->getForm()->render(true);
+        ?>
+        </tbody>
+        <tbody> <?php
+        $tform = TicketForm::getInstance()->getForm($_POST);
+        if ($_POST) $tform->isValid();
+        $tform->render(true);
         ?>
         </tbody>
         <tbody>
         <?php
         //is the user allowed to post replies??
-        if($thisstaff->canPostReply()) {
-            ?>
+        if($thisstaff->canPostReply()) { ?>
         <tr>
             <th colspan="2">
                 <em><strong>Response</strong>: Optional response to the above issue.</em>
@@ -325,3 +389,35 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
     <input type="button" name="cancel" value="Cancel" onclick='window.location.href="tickets.php"'>
 </p>
 </form>
+<script type="text/javascript">
+$(function() {
+    $('input#user-email').typeahead({
+        source: function (typeahead, query) {
+            $.ajax({
+                url: "ajax.php/users?q="+query,
+                dataType: 'json',
+                success: function (data) {
+                    typeahead.process(data);
+                }
+            });
+        },
+        onselect: function (obj) {
+            $('#uid').val(obj.id);
+            $('#user-name').val(obj.name);
+            $('#user-email').val(obj.email);
+        },
+        property: "/bin/true"
+    });
+
+   <?php
+    // Popup user lookup on the initial page load (not post) if we don't have a
+    // user selected
+    if (!$_POST && !$user) {?>
+    $.userLookup('ajax.php/users/lookup/form', function (user) {
+        window.location.href = window.location.href+'&uid='+user.id;
+     });
+    <?php
+    } ?>
+});
+</script>
+
