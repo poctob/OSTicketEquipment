@@ -48,8 +48,7 @@ $info=($_POST && $errors)?Format::htmlchars($_POST):$info;
             <tr><td colspan="2"><hr /></td></tr>
         <tr><td>Email:</td><td><?php echo $thisclient->getEmail(); ?></td></tr>
         <tr><td>Client:</td><td><?php echo $thisclient->getName(); ?></td></tr>
-        <?php }
-        TicketForm::getInstance()->render(false); ?>
+        <?php } ?>
         
         <?php if($cfg->isEquipmentEnabled()) { ?>
      <tr>

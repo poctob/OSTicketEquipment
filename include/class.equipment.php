@@ -165,12 +165,19 @@ class Equipment {
     }
     
     function assignTicket($ticket_id){
+        
+        self::onCloseTicket($ticket_id);
+        
         $sql='equipment_id='.db_input($this->getId())
-            .', ticket_id='.db_input($ticket_id);
+            .', ticket_id='.db_input($ticket_id)
+            .',active=1';
         $sql='INSERT INTO '.EQUIPMENT_TICKET_TABLE.' SET '.$sql.',created=NOW()';
         
          if(!db_query($sql) || !db_affected_rows())
+         {
+            self::updateActivation($ticket_id,$this->getId(),true);
             return false;
+         }
          
          return true;
     }
@@ -190,8 +197,9 @@ class Equipment {
                 {
                     $eq->setStatusID($b_status->getId());
                     $eq->apply();
-                }
+                }                                
             }
+            self::updateActivation($ticket_id,$eq->getId(),false);
         }
     }
 
@@ -266,11 +274,22 @@ class Equipment {
     function findIdByTicket($ticket)
     {
         $sql='SELECT equipment_id FROM '.EQUIPMENT_TICKET_TABLE
-            .' WHERE ticket_id='.db_input($ticket);
-
+            .' WHERE active=1 and ticket_id='.db_input($ticket);
+        
         list($id) =db_fetch_row(db_query($sql));
 
         return $id;
+    }
+    
+    function updateActivation($ticket, $equipment, $activate)
+    {
+        $active=$activate?1:0;
+        $sql='UPDATE '.EQUIPMENT_TICKET_TABLE
+            .' SET active='.db_input($active)
+            .' WHERE ticket_id='.db_input($ticket)
+            .' AND equipment_id='.db_input($equipment);
+
+        return db_query($sql);
     }
     
     function findByTicket($ticket) {

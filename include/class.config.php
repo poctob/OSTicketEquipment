@@ -197,9 +197,14 @@ class OsticketConfig extends Config {
         return ($this->get('enable_kb') && FAQ::countPublishedFAQs());
     }
     
-     function isEquipmentEnabled() {
+    function isEquipmentEnabled() {
         require_once(INCLUDE_DIR.'class.equipment.php');
         return ($this->get('enable_equipment') && Equipment::countPublishedEquipment());
+    }
+    
+    function isEquipmentEnabledFrontEnd() {
+        require_once(INCLUDE_DIR.'class.equipment.php');
+        return ($this->get('enable_equipment_frontend') && Equipment::countPublishedEquipment());
     }
 
     function getVersion() {
@@ -1001,6 +1006,9 @@ class OsticketConfig extends Config {
 
 	return $this->updateAll(array(
             'enable_equipment'=>isset($vars['enable_equipment'])?1:0,
+           )) && $this->updateAll(array(
+            'enable_equipment_frontend'=>
+            isset($vars['enable_equipment_frontend'])?1:0,
            ));  
     }
 

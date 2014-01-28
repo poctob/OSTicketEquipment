@@ -112,16 +112,30 @@ if ($_POST)
         </tr>
   <?php if($cfg->isEquipmentEnabled()) { 
       $eq=Equipment::FindByTicket($ticket->getId());
+      $eq_id=-1;
+      $eq_status_id=-1;
+      
+      if($eq)
+      {
+          $eq_id=$eq->getId();
+          $eq_status_id=$eq->getStatusID();
+      }
       ?>
             <tr>
            <td>Equipment Affected:</td>
         <td>
-            <select id="equipment_id" name="equipment_id">              
+           <select id="equipment_id" name="equipment_id">
+                <option value="" selected="selected">&mdash; Select Equipment &mdash;</option>
                 <?php
-                   echo sprintf('<option value="%d" %s>%s</option>',
-                                $eq->getId(), 'selected="selected"', $eq->getName());
-                    ?>
-               
+                if($equipment=Equipment::getPublishedEquipment()) {
+                    foreach($equipment as $id =>$name) {
+                        echo sprintf('<option value="%d" %s>%s</option>',
+                                $id,($eq_id==$id)?'selected="selected"':'', $name);
+                    }
+                } else { ?>
+                    <option value="0" >No Equipment</option>
+                <?php
+                } ?>
             </select>      
             
               <select id="status_id" name="status_id">
@@ -130,7 +144,7 @@ if ($_POST)
                 if($status=Equipment_Status::getStatusList(true)) {
                     foreach($status as $id =>$name) {
                         echo sprintf('<option value="%d" %s>%s</option>',
-                                $id, ($eq->getStatusID()==$id)?'selected="selected"':'', $name);
+                                $id, ($eq_status_id==$id)?'selected="selected"':'', $name);
                     }
                 } else { ?>
                     <option value="0" >No Status</option>

@@ -1922,10 +1922,8 @@ class Ticket {
             $equipment=new Equipment($vars['equipment_id']);
             $equipment->setStatusID($vars['status_id']);
             $success=$equipment->apply();
-            if(!$is_update)
-            {
-                $success=$equipment->assignTicket($this->getId());
-            }
+            $success=$equipment->assignTicket($this->getId());
+            
             return $success;
         }
         return true;

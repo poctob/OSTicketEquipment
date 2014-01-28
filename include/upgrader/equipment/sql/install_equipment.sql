@@ -1,4 +1,3 @@
-ALTER TABLE `%TABLE_PREFIX%config` ADD COLUMN `enable_equipment` TINYINT(1) NOT NULL DEFAULT 0 ;
 ALTER TABLE `%TABLE_PREFIX%groups` ADD COLUMN `can_manage_equipment` TINYINT(1) NOT NULL DEFAULT 0 ;
 
 
@@ -45,7 +44,7 @@ CREATE TABLE `%TABLE_PREFIX%equipment_ticket` (
   `ticket_id` int(11) NOT NULL,
   `created` date NOT NULL,
   PRIMARY KEY (`equipment_id`,`ticket_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%plugin` (
   `plugin_id` INT NOT NULL AUTO_INCREMENT ,

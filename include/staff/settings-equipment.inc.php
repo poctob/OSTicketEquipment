@@ -67,8 +67,16 @@ else
             <td width="180">Equipment status:</td>
             <td>
               <input type="checkbox" name="enable_equipment" value="1" <?php echo $config['enable_equipment']?'checked="checked"':''; ?>>
-              Enable Equipment&nbsp;<em>(Client interface)</em>
+              Enable Equipment&nbsp;<em>(Staff backend interface)</em>
               &nbsp;<font class="error">&nbsp;<?php echo $errors['enable_equipment']; ?></font>
+            </td>
+        </tr>
+        <tr>
+            <td width="180">Equipment status, frontend:</td>
+            <td>
+              <input type="checkbox" name="enable_equipment_frontend" value="1" <?php echo $config['enable_equipment_frontend']?'checked="checked"':''; ?>>
+              Enable Equipment Frontend&nbsp;<em>(User frontend interface)</em>
+              &nbsp;<font class="error">&nbsp;<?php echo $errors['enable_equipment_frontend']; ?></font>
             </td>
         </tr>
     </tbody>

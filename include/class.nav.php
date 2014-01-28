@@ -292,7 +292,7 @@ class UserNav {
                 $navs['kb']=array('desc'=>'Knowledgebase','href'=>'kb/index.php','title'=>'');
 
             
-            if($cfg && $cfg->isEquipmentEnabled())
+            if($cfg && $cfg->isEquipmentEnabledFrontEnd())
                 $navs['equipment']=array('desc'=>'Equipment Status','href'=>'equipment/index.php','title'=>'');
              
             $navs['new']=array('desc'=>'Open&nbsp;New&nbsp;Ticket','href'=>'open.php','title'=>'');
