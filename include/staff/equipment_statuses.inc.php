@@ -86,7 +86,7 @@ else
                 
                 $equipments=0;
                 if($row['equipments'])
-                    $equipments=sprintf('<a href="equipment.php?cid=%d">%d</a>',$row['status_id'],$row['equipments']);
+                    $equipments=sprintf('<a href="equipment.php?status_id=%d">%d</a>',$row['status_id'],$row['equipments']);
                 ?>
             <tr id="<?php echo $row['status_id']; ?>">
                 <td width=7px>

@@ -144,7 +144,7 @@ class Equipment {
             .' AND ticket.status=\'open\'';
         if(($res=db_query($sql)) && db_num_rows($res))
             while(list($id)=db_fetch_row($res))
-                $ticket_ids[$id]=$id;
+                $ticket_ids[]=$id;
 
             return $ticket_ids; 
     }
@@ -159,37 +159,76 @@ class Equipment {
             .' AND ticket.status=\'closed\'';
         if(($res=db_query($sql)) && db_num_rows($res))
             while(list($id)=db_fetch_row($res))
-                $ticket_ids[$id]=$id;
+                $ticket_ids[]=$id;
 
             return $ticket_ids; 
     }
     
+    /**
+     * Assigns a ticket to the equipment.
+     * First we check if this ticket has any equipment already assigned to it,
+     * this is done in case of the update, if there is any equipment assigned,
+     * it is deleted from the equipment_ticket table.  Regular on_close checks
+     * are ran as well.
+     * @param type $ticket_id  Id of the ticket to assign equipment to.
+     * @return boolean if operation is succes, True.  False if somethign goes
+     * wrong
+     */
     function assignTicket($ticket_id){
         
-        self::onCloseTicket($ticket_id);
+        self::onCloseTicket($ticket_id, $this->getId(), true);
+        self::deleteByTicket($ticket_id);
         
         $sql='equipment_id='.db_input($this->getId())
-            .', ticket_id='.db_input($ticket_id)
-            .',active=1';
+            .', ticket_id='.db_input($ticket_id);
+            
         $sql='INSERT INTO '.EQUIPMENT_TICKET_TABLE.' SET '.$sql.',created=NOW()';
         
          if(!db_query($sql) || !db_affected_rows())
          {
-            self::updateActivation($ticket_id,$this->getId(),true);
             return false;
          }
          
          return true;
     }
     
-    function onCloseTicket($ticket_id)
+    /**
+     * This function is overruning its original scope, but it seems logical
+     * to put that functionality there.  
+     * It finds equipment associated with the supplied ticket id, checks if this
+     * ticket is the only one associated with the equipment and will reset
+     * equipment status to its baseline.
+     * 
+     * @param int $ticket_id Ticket id to lookup
+     * @param int $eq_id Optional, equipment id to ignore, if this id is 
+     * associated with the ticket, it will not be reset.  This is used when
+     * a ticket is updated and new status is selected for existing equipment. 
+     * @param bool $force Whether to force status reset.  This is used when new
+     * equipment is selected during ticket update.  If there is only one ticket
+     * associated with this equipment, the equipment status will be reset.
+     * @return void
+     */
+    function onCloseTicket($ticket_id, $eq_id=0, $force=false)
     {
         
-        $eq=self::findByTicket($ticket_id);
+        $eq=self::findByTicket($ticket_id);        
         if($eq)
-        {
+        {     
+            if($eq->getId()==$eq_id)
+            {
+                return;
+            }
+                
             $open_tickets=self::getOpenTickets($eq->getId());
-            if(count($open_tickets)==0)
+            
+            $do_close = (count($open_tickets)==0);
+            if(!$do_close)
+            {
+                $do_close=$force && 
+                        count($open_tickets)==1 && 
+                        $open_tickets[0]==$ticket_id;
+            }
+            if($do_close)
             {
                 $b_status=Equipment_Status::getBaselineStatus();
        
@@ -199,7 +238,6 @@ class Equipment {
                     $eq->apply();
                 }                                
             }
-            self::updateActivation($ticket_id,$eq->getId(),false);
         }
     }
 
@@ -274,21 +312,17 @@ class Equipment {
     function findIdByTicket($ticket)
     {
         $sql='SELECT equipment_id FROM '.EQUIPMENT_TICKET_TABLE
-            .' WHERE active=1 and ticket_id='.db_input($ticket);
+            .' WHERE ticket_id='.db_input($ticket);
         
         list($id) =db_fetch_row(db_query($sql));
 
         return $id;
-    }
+    }    
     
-    function updateActivation($ticket, $equipment, $activate)
+    function deleteByTicket($ticket)
     {
-        $active=$activate?1:0;
-        $sql='UPDATE '.EQUIPMENT_TICKET_TABLE
-            .' SET active='.db_input($active)
-            .' WHERE ticket_id='.db_input($ticket)
-            .' AND equipment_id='.db_input($equipment);
-
+        $sql='DELETE FROM '.EQUIPMENT_TICKET_TABLE
+                .' WHERE ticket_id='.db_input($ticket);
         return db_query($sql);
     }
     
