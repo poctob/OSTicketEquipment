@@ -127,7 +127,7 @@ if ($_POST)
            <select id="equipment_id" name="equipment_id">
                 <option value="" selected="selected">&mdash; Select Equipment &mdash;</option>
                 <?php
-                if($equipment=Equipment::getPublishedEquipment()) {
+                if($equipment=Equipment::getEquipment()) {
                     foreach($equipment as $id =>$name) {
                         echo sprintf('<option value="%d" %s>%s</option>',
                                 $id,($eq_id==$id)?'selected="selected"':'', $name);

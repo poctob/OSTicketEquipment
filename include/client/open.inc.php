@@ -50,7 +50,7 @@ $info=($_POST && $errors)?Format::htmlchars($_POST):$info;
         <tr><td>Client:</td><td><?php echo $thisclient->getName(); ?></td></tr>
         <?php } ?>
         
-        <?php if($cfg->isEquipmentEnabled()) { ?>
+        <?php if($cfg->isEquipmentEnabledFrontEnd()) { ?>
      <tr>
      <td>Equipment Affected:</td>
         <td>
