@@ -199,7 +199,7 @@ class OsticketConfig extends Config {
     
     function isEquipmentEnabled() {
         require_once(INCLUDE_DIR.'class.equipment.php');
-        return ($this->get('enable_equipment') && Equipment::countPublishedEquipment());
+        return ($this->get('enable_equipment'));
     }
     
     function isEquipmentEnabledFrontEnd() {
